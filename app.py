@@ -17,7 +17,21 @@ from extractor import extract
 from dates import is_ambiguous
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE, "throughline.db")
+ON_VERCEL = bool(os.environ.get("VERCEL") or os.environ.get("THROUGHLINE_TMP_DB"))
+
+
+def _pick_db_path():
+    """Local: next to this file. Vercel (read-only disk): the temp directory, the only writable place."""
+    if not ON_VERCEL:
+        local = os.path.join(BASE, "throughline.db")
+        if os.access(BASE, os.W_OK) and (not os.path.exists(local) or os.access(local, os.W_OK)):
+            return local
+    import tempfile
+    return os.path.join(tempfile.gettempdir(), "throughline.db")
+
+
+DB_PATH = _pick_db_path()
+_seeded = False
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 SCHEMA = """
@@ -37,7 +51,22 @@ def db():
         g.db = sqlite3.connect(DB_PATH)
         g.db.row_factory = sqlite3.Row
         g.db.executescript(SCHEMA)
+        _seed_once()
     return g.db
+
+
+def _seed_once():
+    """Serverless disk is empty and per-instance, so on Vercel load the demo memory once per
+    instance. This keeps /api/memory, /api/board etc. populated and the conflict demo working."""
+    global _seeded
+    if _seeded or not ON_VERCEL:
+        return
+    _seeded = True
+    try:
+        if g.db.execute("SELECT COUNT(*) FROM meetings").fetchone()[0] == 0:
+            demo_load()
+    except Exception:
+        pass
 
 
 @app.teardown_appcontext
@@ -378,20 +407,24 @@ def sample():
                    meeting2={"title": "Orbit replanning", "date": d2.isoformat(), "transcript": m2})
 
 
-@app.route("/api/demo", methods=["POST"])
-def demo():
+def demo_load():
     """Loads meeting 1 straight into memory, so meeting 2 can show conflicts."""
     c = db()
     old = c.execute("SELECT id FROM meetings WHERE title='Orbit kickoff' AND status='committed'").fetchone()
     if old:  # pressing the button twice must not add the same decisions twice
-        return jsonify(ok=True, meeting_id=old["id"], already_loaded=True)
+        return {"ok": True, "meeting_id": old["id"], "already_loaded": True}
     (d1, m1), _ = _sample_texts(date.today())
     mid, _ = process_meeting("Orbit kickoff", d1, m1)
     c.execute("UPDATE actions SET approved=1 WHERE meeting_id=? AND owner!='Unassigned'", (mid,))
     c.commit()
     with app.test_request_context(json={"confirm": True}):
         commit(mid)
-    return jsonify(ok=True, meeting_id=mid)
+    return {"ok": True, "meeting_id": mid}
+
+
+@app.route("/api/demo", methods=["POST"])
+def demo():
+    return jsonify(demo_load())
 
 
 @app.route("/api/reset", methods=["POST"])
