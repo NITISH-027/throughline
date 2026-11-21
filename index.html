@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Throughline | meetings that remember</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- 1 HERO -->
+<section class="panel hero rv" id="home">
+  <div class="hero-art"></div><img class="heroobj" src="/static/heroobj.png" alt=""><div class="hero-fade"></div>
+  <nav class="nav">
+    <a class="brand" href="#home"><span class="logo"><i></i><i></i></span>Throughline<b>.</b></a>
+    <div class="links"><a href="#how">How it works</a><a href="#capture">Capture</a><a href="#review">Review</a><a href="#memory">Memory</a><a href="#board">Board</a><a href="#digest">Digest</a><a href="#faq">FAQ</a></div>
+    <div class="navbtns"><span class="aichip" id="aiChip">...</span><button class="pill dark" id="btnDemo">Load demo</button></div>
+  </nav>
+  <div class="hero-copy">
+    <svg class="ticks" width="46" height="40" viewBox="0 0 46 40"><path d="M8 30 L2 14 M20 22 L18 4 M34 28 L44 14" stroke="#0b57e3" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <h1>Meetings forget.<br>Throughline <span class="scribble">remembers<svg viewBox="0 0 300 18" preserveAspectRatio="none"><path d="M3 12 C60 4 120 16 180 8 S270 6 297 10" stroke="#ff6b3d" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span></h1>
+    <p>It listens to who said what, pulls out decisions, owners and deadlines, and catches the moment today's meeting quietly contradicts last week's.</p>
+    <div class="row"><a class="pill dark" href="#capture">Get started</a><a class="pill ghost" href="#review">See conflicts</a></div>
+  </div>
+  <div class="floatcard fc1"><span class="tag blue">Conflict</span><p><s>Launch Dec 5</s></p><b>Launch Dec 19</b></div>
+  <div class="floatcard fc2"><span class="dotok"></span><div><b>3 tasks posted</b><small>after you confirmed</small></div></div>
+</section>
+
+<!-- 2 STATS BAND -->
+<section class="band rv" id="stats">
+  <div><b id="stDec">0</b><span>Decisions in memory</span></div>
+  <div><b id="stMeet">0</b><span>Meetings remembered</span></div>
+  <div><b id="stTask">0</b><span>Open tasks</span></div>
+  <div><b id="stRev">0</b><span>Decisions reversed</span></div>
+</section>
+
+<!-- 3 HOW -->
+<section class="panel rv" id="how">
+  <div class="how-grid">
+    <div class="how-head"><svg class="ticks" width="40" height="34" viewBox="0 0 46 40"><path d="M8 30 L2 14 M20 22 L18 4" stroke="#0b57e3" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+      <h2>That's the way it works!</h2><p>Three steps from a messy transcript to tasks you trust.</p></div>
+    <div class="how-item"><div class="ic i1" id="ic1"></div><h4>Capture</h4><p>Paste a transcript. Every line keeps its speaker, so every decision has a person.</p></div>
+    <div class="how-item"><div class="ic i2" id="ic2"></div><h4>Check memory</h4><p>New decisions are compared with every earlier meeting. Contradictions are flagged.</p></div>
+    <div class="how-item"><div class="ic i3" id="ic3"></div><h4>Confirm and post</h4><p>Nothing reaches the tracker until you read the list and press confirm.</p></div>
+  </div>
+  <div class="dotmap"><i class="pin p1"></i><i class="pin p2"></i><i class="pin p3 big"></i><i class="pin p4"></i></div>
+</section>
+
+<!-- 4 CAPTURE -->
+<section class="panel rv" id="capture">
+  <div class="cap-grid">
+    <div>
+      <svg class="ticks" width="40" height="34" viewBox="0 0 46 40"><path d="M8 30 L2 14 M20 22 L18 4" stroke="#0b57e3" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+      <h2>Drop in a <span class="scribble">meeting<svg viewBox="0 0 300 18" preserveAspectRatio="none"><path d="M3 12 C60 4 120 16 180 8 S270 6 297 10" stroke="#ff6b3d" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2>
+      <p class="lead">One line per turn: <code>Name: what they said</code>. Timestamps like [00:12] are fine. You can also upload a .txt file.</p>
+      <div class="formcard">
+        <div class="row"><input id="mTitle" placeholder="Meeting title" value="Orbit replanning"><input type="date" id="mDate"></div>
+        <textarea id="mText" spellcheck="false" placeholder="Asha: We decided to launch on December 5.&#10;Ravi, can you set up staging by Friday?"></textarea>
+        <div class="row wrap">
+          <button class="pill ghost sm" id="btnS1">Sample: kickoff</button>
+          <button class="pill ghost sm" id="btnS2">Sample: replanning</button>
+          <label class="pill ghost sm">Upload .txt<input type="file" id="mFile" accept=".txt,.vtt,.srt" hidden></label>
+          <span class="spacer"></span>
+          <button class="pill dark" id="btnRun">Analyze meeting →</button>
+        </div>
+        <div id="capErr" class="err"></div>
+      </div>
+    </div>
+    <div class="community">
+      <div class="who" id="who"></div>
+      <div class="mini"><b id="spN">0</b> speakers · <b id="lnN">0</b> lines parsed live</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 REVIEW -->
+<section class="panel rv" id="review"><div id="reviewScene"></div></section>
+
+<!-- 6 MEMORY -->
+<section class="panel rv mapped" id="memory">
+  <div class="sec-head"><svg class="ticks" width="40" height="34" viewBox="0 0 46 40"><path d="M8 30 L2 14 M20 22 L18 4" stroke="#0b57e3" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+    <h2>What the team decided, <span class="scribble">and when it changed<svg viewBox="0 0 300 18" preserveAspectRatio="none"><path d="M3 12 C60 4 120 16 180 8 S270 6 297 10" stroke="#ff6b3d" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2>
+    <p class="lead">Each pin is a decision. A grey pin was replaced, and the dotted line shows what replaced it.</p></div>
+  <div id="memBody"></div>
+</section>
+
+<!-- 7 BOARD -->
+<section class="panel rv" id="board">
+  <div class="sec-head row between"><div><h2>Tasks and reminders</h2>
+    <p class="lead">Only tasks you confirmed land here. Reminders are in-app: overdue or due within 2 days of the demo date.</p></div>
+    <label class="datechip">Demo date <input type="date" id="today"></label></div>
+  <div id="remBody"></div>
+  <div class="cols" id="boardBody"></div>
+</section>
+
+<!-- 8 DIGEST -->
+<section class="panel rv" id="digest">
+  <div class="sec-head row between"><div><h2>Weekly digest, <span class="scribble">per person<svg viewBox="0 0 300 18" preserveAspectRatio="none"><path d="M3 12 C60 4 120 16 180 8 S270 6 297 10" stroke="#ff6b3d" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2>
+    <p class="lead">Built on demand from the board and memory. This app does not email or message it for you.</p></div>
+    <div class="arrows"><button id="dPrev" aria-label="Previous">←</button><button id="dNext" aria-label="Next">→</button></div></div>
+  <div class="scroller" id="digBody"></div>
+</section>
+
+<!-- 9 FAQ -->
+<section class="panel rv" id="faq">
+  <div class="faq-grid">
+    <div><svg class="ticks" width="40" height="34" viewBox="0 0 46 40"><path d="M8 30 L2 14 M20 22 L18 4" stroke="#0b57e3" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+      <h2>Got a question for <span class="scribble">Throughline?<svg viewBox="0 0 300 18" preserveAspectRatio="none"><path d="M3 12 C60 4 120 16 180 8 S270 6 297 10" stroke="#ff6b3d" stroke-width="5" fill="none" stroke-linecap="round"/></svg></span></h2>
+      <p class="lead">The messy parts of real meetings, and what it does about them.</p></div>
+    <div class="faq" id="faqList"></div>
+  </div>
+</section>
+
+<footer class="foot rv">
+  <div class="fgrid">
+    <div><a class="brand light" href="#home"><span class="logo"><i></i><i></i></span>Throughline<b>.</b></a>
+      <p>A meeting-to-execution agent. Built for the Product Space Agentic AI Hackathon, problem statement 03.</p></div>
+    <div><h5>Pipeline</h5><a href="#capture">Capture</a><a href="#review">Review</a><a href="#memory">Memory</a></div>
+    <div><h5>After</h5><a href="#board">Board</a><a href="#digest">Digest</a><a href="#faq">FAQ</a></div>
+    <div><h5>Honest notes</h5><span>AI is real with your own Gemini key.</span><span>Reminders and digest stay in the app.</span></div>
+  </div>
+</footer>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>
